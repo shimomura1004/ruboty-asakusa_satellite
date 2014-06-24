@@ -10,6 +10,11 @@ module Ruboty
       env :ASAKUSA_SATELLITE_USERNAME, "Account's username (e.g. alice)"
       env :ASAKUSA_SATELLITE_API_KEY, "Account's API Key"
 
+      def initialize(x)
+        super
+        @messages = []
+      end
+
       def run
         connect
         Signal.trap("INT") { exit 1 }
@@ -28,6 +33,10 @@ module Ruboty
             message: message[:body]
           }))
         end
+      end
+
+      def messages
+        @messages
       end
 
       private
@@ -71,7 +80,7 @@ module Ruboty
               unless body.nil?
                 body.match(/^@([A-Za-z0-9_]+)/)
                 message_to = $1
-                if message_to
+                #if message_to
                   robo.receive(
                     body: body,
                     from: message["screen_name"],
@@ -79,7 +88,10 @@ module Ruboty
                     to: message_to,
                     type: "groupchat"
                   )
-                end
+                  @messages.push(body)
+p body
+p @messages
+                #end
               end
             end
           end
